@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { isExactMatch } from "./utils/matcher";
 import { listenOverrides, saveOverride } from "./utils/firestoreOverrides";
 import type { RowWithStatus, MappingRow, StatusType } from "./types";
 import DetailsModal from "./components/DetailsModal";
-import "./App.css"; // <-- стили из ПЕРВОГО проекта
+import DetailsModalInfo from "./components/DetailsModalInfo";
+import "./App.css";
+import { isExactMatch } from "./utils/matcher";
 
 const buildKey = (r: MappingRow) => `${r.title}|||${r.matched_csv_title}`;
 const PAGE_SIZE = 20;
@@ -12,8 +13,11 @@ const App = () => {
   const [rows, setRows] = useState<RowWithStatus[]>([]);
   const [filter, setFilter] = useState<"all" | "correct" | "wrong" | "unmapped">("all");
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<RowWithStatus | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const [selected, setSelected] = useState<RowWithStatus | null>(null); // Изменить
+  const [infoRow, setInfoRow] = useState<RowWithStatus | null>(null); // Подробнее
+
   const [page, setPage] = useState(1);
 
   useEffect(() => {
@@ -49,6 +53,7 @@ const App = () => {
       setRows(base);
       setLoading(false);
 
+      // слушаем overrides из firestore
       unsub = listenOverrides((map) => {
         setRows((old) =>
           old.map((r) => {
@@ -64,13 +69,18 @@ const App = () => {
     return () => unsub && unsub();
   }, []);
 
-  const stats = useMemo(() => ({
-    total: rows.length,
-    correct: rows.filter((r) => r.__status === "correct").length,
-    wrong: rows.filter((r) => r.__status === "wrong").length,
-    unmapped: rows.filter((r) => r.__status === "unmapped").length,
-  }), [rows]);
+  // ---------------------- СТАТИСТИКА ----------------------
+  const stats = useMemo(
+    () => ({
+      total: rows.length,
+      correct: rows.filter((r) => r.__status === "correct").length,
+      wrong: rows.filter((r) => r.__status === "wrong").length,
+      unmapped: rows.filter((r) => r.__status === "unmapped").length,
+    }),
+    [rows]
+  );
 
+  // ---------------------- ФИЛЬТРЫ ----------------------
   const filtered = useMemo(() => {
     let out = rows;
 
@@ -88,50 +98,54 @@ const App = () => {
     return out;
   }, [rows, filter, search]);
 
+  // ---------------------- ПАГИНАЦИЯ ----------------------
   const total = filtered.length;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
+  // ---------------------- СОХРАНЕНИЕ ----------------------
   const handleSave = async (status: StatusType, reason: string) => {
     if (!selected) return;
     await saveOverride(buildKey(selected), status, reason);
     setSelected(null);
   };
 
+  // ---------------------- CSV ----------------------
   const exportCSV = () => {
-  const BOM = "\uFEFF"; // важный момент!
+    const BOM = "\uFEFF";
 
-  const rowsData = filtered.map((r, idx) => ({
-    index: idx + 1,
-    product_id: r.product_id || "",
-    title: r.title || "",
-    matched: r.matched_csv_title || "",
-    volume: r.volume || "",
-    status: r.__status,
-    reason: r.__reason
-  }));
+    const rowsData = filtered.map((r, idx) => ({
+      index: idx + 1,
+      product_id: r.product_id || "",
+      title: r.title || "",
+      matched: r.matched_csv_title || "",
+      volume: r.volume || "",
+      status: r.__status,
+      reason: r.__reason,
+    }));
 
-  const header = Object.keys(rowsData[0] || {}).join(";");
+    const header = Object.keys(rowsData[0] || {}).join(";");
 
-  const body = rowsData
-    .map(row =>
-      Object.values(row)
-        .map(v => `"${String(v).replace(/"/g, '""')}"`)
-        .join(";")
-    )
-    .join("\n");
+    const body = rowsData
+      .map((row) =>
+        Object.values(row)
+          .map((v) => `"${String(v).replace(/"/g, '""')}"`)
+          .join(";")
+      )
+      .join("\n");
 
-  const csv = BOM + header + "\n" + body;
+    const csv = BOM + header + "\n" + body;
 
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
 
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "mapping_export.csv";
-  a.click();
-};
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "mapping_export.csv";
+    a.click();
+  };
 
+  // ========================= RENDER =========================
 
   return (
     <div className="page">
@@ -205,10 +219,34 @@ const App = () => {
               </div>
 
               <div className="row-extra">
-                <div className="meta"><span className="meta-label">Product ID:</span><span className="meta-value">{r.product_id || "—"}</span></div>
-                <div className="meta"><span className="meta-label"></span><span className="meta-value">{r.volume || ""}</span></div>
+                <div className="meta">
+                  <span className="meta-label">Product ID:</span>
+                  <span className="meta-value">{r.product_id || "—"}</span>
 
-                <button className="details-btn" onClick={() => setSelected(r)}>Изменить</button>
+                  {r.product_id && (
+                    <button
+                      className="copy-btn"
+                      onClick={() => navigator.clipboard.writeText(r.product_id)}
+                    >
+                      Скопировать
+                    </button>
+                  )}
+                </div>
+
+                <div className="meta">
+                  <span className="meta-label"></span>
+                  <span className="meta-value">{r.volume || ""}</span>
+                </div>
+
+                <div>
+                  <button className="details-btn" onClick={() => setInfoRow(r)}>
+                  Подробнее
+                </button>
+
+                <button className="details-btn" onClick={() => setSelected(r)}>
+                  Изменить
+                </button>
+                </div>
               </div>
             </div>
           ))}
@@ -220,12 +258,23 @@ const App = () => {
 
         {totalPages > 1 && (
           <div className="pagination">
-            <button className="btn" disabled={page === 1} onClick={() => setPage(p => p - 1)}>← Назад</button>
+            <button className="btn" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
+              ← Назад
+            </button>
             <span className="page-info">{page} / {totalPages}</span>
-            <button className="btn" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Вперёд →</button>
+            <button className="btn" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>
+              Вперёд →
+            </button>
           </div>
         )}
       </section>
+
+      {infoRow && (
+        <DetailsModalInfo
+          row={infoRow}
+          onClose={() => setInfoRow(null)}
+        />
+      )}
 
       {selected && (
         <DetailsModal
