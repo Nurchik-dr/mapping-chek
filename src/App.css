@@ -197,6 +197,7 @@ body {
 
 .pagination {
   margin-top: 14px;
+margin-bottom: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -241,7 +242,7 @@ body {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -271,9 +272,11 @@ body {
   .controls-row {
     grid-template-columns: minmax(0, 1fr);
   }
+
   .row-main {
     flex-direction: column;
   }
+
   .status-block {
     align-items: flex-start;
   }
@@ -297,6 +300,7 @@ body {
 .edit-btn:active {
   background: #d1d5db;
 }
+
 .copy-btn {
   margin-left: 8px;
   padding: 2px 6px;
@@ -316,6 +320,7 @@ body {
 .copy-btn:active {
   background: #e5e7eb;
 }
+
 /* ===========================
    📱 MOBILE FIRST (до 480px)
    =========================== */

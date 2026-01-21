@@ -38,13 +38,13 @@ const App = () => {
 
         if (!actual.trim()) {
           status = "unmapped";
-          reason = "Нет замапленного товара";
+          reason = "Маппинг выполнен неверно";
         } else if (isExactMatch(expected, actual)) {
           status = "correct";
-          reason = "Совпадает после нормализации";
+          reason = "Маппинг выполнен верно";
         } else {
           status = "wrong";
-          reason = "Не совпадает после нормализации";
+          reason = "Маппинг выполнен неверно";
         }
 
         return { ...r, __status: status, __reason: reason };
@@ -191,6 +191,27 @@ const App = () => {
         <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
           <button className="btn" onClick={exportCSV}>Выгрузить CSV</button>
         </div>
+        {totalPages > 1 && (
+  <div className="pagination">
+    <button className="btn" disabled={page === 1} onClick={() => setPage(1)}>
+      « В начало
+    </button>
+
+    <button className="btn" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
+      ← Назад
+    </button>
+
+    <span className="page-info">{page} / {totalPages}</span>
+
+    <button className="btn" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>
+      Вперёд →
+    </button>
+
+    <button className="btn" disabled={page === totalPages} onClick={() => setPage(totalPages)}>
+      В конец »
+    </button>
+  </div>
+)}
 
         <div className="rows">
           {loading && <div className="empty">Загрузка...</div>}
@@ -240,12 +261,12 @@ const App = () => {
 
                 <div className="meta-details">
                   <button className="details-btn" onClick={() => setInfoRow(r)}>
-                  Подробнее
-                </button>
+                    Подробнее
+                  </button>
 
-                <button className="details-btn" onClick={() => setSelected(r)}>
-                  Изменить
-                </button>
+                  <button className="details-btn" onClick={() => setSelected(r)}>
+                    Изменить
+                  </button>
                 </div>
               </div>
             </div>
@@ -255,18 +276,6 @@ const App = () => {
             <div className="empty">По заданным фильтрам ничего нет</div>
           )}
         </div>
-
-        {totalPages > 1 && (
-          <div className="pagination">
-            <button className="btn" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
-              ← Назад
-            </button>
-            <span className="page-info">{page} / {totalPages}</span>
-            <button className="btn" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>
-              Вперёд →
-            </button>
-          </div>
-        )}
       </section>
 
       {infoRow && (
