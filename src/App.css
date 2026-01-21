@@ -411,3 +411,8 @@ body {
     max-width: 1400px;
   }
 }
+
+.meta-details {
+  display: flex;
+  gap: 5px;
+}

@@ -238,7 +238,7 @@ const App = () => {
                   <span className="meta-value">{r.volume || ""}</span>
                 </div>
 
-                <div>
+                <div className="meta-details">
                   <button className="details-btn" onClick={() => setInfoRow(r)}>
                   Подробнее
                 </button>
