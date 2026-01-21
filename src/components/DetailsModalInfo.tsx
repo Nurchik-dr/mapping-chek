@@ -6,8 +6,6 @@ type Props = {
   onClose: () => void;
 };
 
-const copy = (v: any) => v && navigator.clipboard.writeText(String(v));
-
 const DetailsModalInfo = ({ row, onClose }: Props) => {
   const fields = [
     ["Product ID", row.product_id],
@@ -24,92 +22,64 @@ const DetailsModalInfo = ({ row, onClose }: Props) => {
   ];
 
   return (
-    <div style={styles.backdrop}>
-      <div style={styles.modal}>
-        <h3 style={{ marginTop: 0 }}>Детальная информация</h3>
+    // ⬇⬇⬇ BACKDROP — закрываем по клику
+    <div style={backdrop} onClick={onClose}>
+      {/* ⬇⬇⬇ MODAL — стопим клик, чтобы не закрывалась */}
+      <div style={modal} onClick={(e) => e.stopPropagation()}>
+        <h3>Детальная информация</h3>
 
-        <div style={styles.content}>
+        <div style={{ marginTop: 12 }}>
           {fields.map(([label, value]) => (
-            <div key={label} style={styles.row}>
-              <div style={styles.label}>{label}</div>
-              <div
-                style={styles.value}
-                onClick={() => copy(value)}
-                title="Нажми чтобы скопировать"
-              >
-                {value ? String(value) : "—"}
-              </div>
+            <div key={label} style={rowStyle}>
+              <span style={labelStyle}>{label}</span>
+              <span style={valueStyle}>{String(value)}</span>
             </div>
           ))}
         </div>
 
-        <div style={styles.footer}>
-          <button style={styles.closeBtn} onClick={onClose}>Закрыть</button>
+        <div style={{ textAlign: "right", marginTop: 16 }}>
         </div>
       </div>
     </div>
   );
 };
 
-const styles: Record<string, React.CSSProperties> = {
-  backdrop: {
-    position: "fixed",
-    inset: 0,
-    background: "rgba(0,0,0,0.45)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 9999
-  },
-  modal: {
-    background: "#fff",
-    width: "520px",
-    maxHeight: "80vh",
-    overflowY: "auto",
-    borderRadius: "14px",
-    padding: "20px 22px",
-    boxShadow: "0 20px 40px rgba(0,0,0,0.25)",
-  },
-  content: {
-    marginTop: "14px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
-  },
-  row: {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: "12px",
-    paddingBottom: "6px",
-    borderBottom: "1px solid #e5e7eb",
-  },
-  label: {
-    fontSize: "13px",
-    color: "#6b7280",
-    flex: 1
-  },
-  value: {
-    fontSize: "13px",
-    fontWeight: 500,
-    color: "#111827",
-    cursor: "pointer",
-    flex: 1,
-    textAlign: "right",
-    userSelect: "none"
-  },
-  footer: {
-    marginTop: "16px",
-    display: "flex",
-    justifyContent: "flex-end"
-  },
-  closeBtn: {
-    padding: "6px 14px",
-    borderRadius: "8px",
-    border: "1px solid #d1d5db",
-    background: "#fff",
-    fontSize: "13px",
-    cursor: "pointer"
-  }
-};
+const backdrop = {
+  position: "fixed",
+  inset: 0,
+  background: "rgba(0,0,0,.4)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 1000,
+  cursor: "pointer"
+} as const;
+
+const modal = {
+  background: "#fff",
+  padding: "18px 20px",
+  borderRadius: "12px",
+  width: "460px",
+  maxHeight: "80vh",
+  overflowY: "auto",
+  cursor: "default"
+} as const;
+
+const rowStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  padding: "6px 0",
+  borderBottom: "1px solid #e5e7eb"
+} as const;
+
+const labelStyle = {
+  fontSize: "13px",
+  color: "#6b7280"
+} as const;
+
+const valueStyle = {
+  fontSize: "13px",
+  fontWeight: 500
+} as const;
 
 export default DetailsModalInfo;
