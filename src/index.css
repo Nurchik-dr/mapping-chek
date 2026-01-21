@@ -66,3 +66,53 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+/* === ADAPTIVE CONTAINER === */
+.page {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;
+  padding-right: 16px;
+  box-sizing: border-box;
+}
+
+/* === SMALL SCREENS (320px–480px) === */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.8em;
+  }
+
+  button {
+    padding: 0.5em 0.8em;
+    font-size: 0.9em;
+  }
+
+  body {
+    padding: 8px;
+    min-height: auto;
+  }
+}
+
+/* === MEDIUM SCREENS (481px–768px) === */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2.4em;
+  }
+
+  button {
+    padding: 0.55em 1em;
+  }
+
+  .page {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+/* === LARGE SCREENS (1280px+) === */
+@media (min-width: 1280px) {
+  .page {
+    max-width: 1440px;
+  }
+}

@@ -316,16 +316,98 @@ body {
 .copy-btn:active {
   background: #e5e7eb;
 }
-.details-btn {
-  padding: 4px 10px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: #fff;
-  font-size: 13px;
-  cursor: pointer;
-  transition: 0.15s;
+/* ===========================
+   📱 MOBILE FIRST (до 480px)
+   =========================== */
+@media (max-width: 480px) {
+
+  .page {
+    padding: 12px;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  .controls-row {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  .chips {
+    gap: 6px;
+  }
+
+  .chip {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .row-card {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .row-main {
+    flex-direction: column !important;
+    gap: 12px;
+  }
+
+  .status-block {
+    align-items: flex-start !important;
+    min-width: auto;
+  }
+
+  .meta {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .row-extra {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+
+  .details-btn {
+    width: 100%;
+  }
+
+  .pagination {
+    gap: 8px;
+  }
 }
 
-.details-btn:hover {
-  background: #f3f4f6;
+/* ===========================
+   📲 SMALL — MEDIUM (481-768px)
+   =========================== */
+@media (max-width: 768px) {
+
+  .controls-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .row-main {
+    flex-direction: column;
+  }
+
+  .status-block {
+    align-items: flex-start;
+  }
+
+  .meta {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* ===========================
+   🖥️ LARGE (1280px+)
+   =========================== */
+@media (min-width: 1280px) {
+  .page {
+    max-width: 1400px;
+  }
 }
