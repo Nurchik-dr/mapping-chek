@@ -1,0 +1,49 @@
+.controls-row {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.input {
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  padding: 6px 10px;
+  background: #f9fafb;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.chip-active {
+  background: #111827;
+  border-color: #111827;
+  color: #f9fafb;
+}
+@media (max-width: 768px) {
+  .controls-row {
+    grid-template-columns: 1fr;
+  }
+}
